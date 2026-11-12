@@ -18,7 +18,7 @@ canvas#c{height:auto;aspect-ratio:16/9;flex:none}
 #tk,#kn,#pp,#menu,#sum{position:static!important;transform:none!important;width:auto!important;max-width:none!important;margin:2cqw 3cqw 0!important}
 #kn{padding:3cqw}.b{padding:2cqw 3cqw;margin:.6cqw 0}
 #pp{display:grid;grid-template-columns:1fr 1fr;gap:1.5cqw}#pp h3,#pp canvas,#pp .b:last-child{grid-column:1/-1}
-#mc{width:22cqw!important;justify-self:center}#menu h1{font-size:9cqw}#sum{margin-bottom:3cqw!important}}
+#mc{width:22cqw!important;justify-self:center}#menu h1{font-size:9cqw}#sum{margin-bottom:3cqw!important}#md{width:92cqw!important}#toast{white-space:normal;width:84cqw;text-align:center}}
 canvas#c{width:100%;height:100%;display:block}
 .ov{position:absolute;font-size:var(--f)}
 .pn{background:var(--pn);border:1px solid var(--bd);border-radius:.7cqw;padding:.6cqw 1cqw}
@@ -37,22 +37,25 @@ canvas#c{width:100%;height:100%;display:block}
 #menu p{margin:.4cqw 0 .8cqw;opacity:.8}
 #sum{left:50%;top:50%;transform:translate(-50%,-50%);width:36cqw;text-align:center}
 .h{display:none!important}
+#md{left:50%;top:50%;transform:translate(-50%,-50%);width:40cqw;max-height:88%;overflow:auto;z-index:5;text-align:center}
+#toast{left:50%;top:1.2cqw;transform:translateX(-50%);z-index:6;white-space:nowrap;border-color:var(--gd)}
+#fr{height:.9cqw;min-height:7px;background:#0008;border:1px solid var(--bd);margin-top:.3cqw;border-radius:9px;overflow:hidden}#fr i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4a8,#ec3,#d33)}
 input[type=range]{width:100%}
 </style></head><body>
 <div id="w"><canvas id="c" width="960" height="540"></canvas>
-<div id="hud" class="ov pn h"></div><div id="tk" class="ov pn h"></div>
-<div id="top" class="ov h"><button class="b" id="bs" title="Âm thanh">🔊</button><button class="b" id="bp" title="Tạm dừng (Esc)">⏸ Menu</button></div>
+<div id="hud" class="ov pn h"><span id="ht"></span><div id="fr" title="Sợ hãi"><i></i></div></div><div id="tk" class="ov pn h"></div>
+<div id="top" class="ov h"><button class="b" id="bf" title="Toàn màn hình">⛶</button><button class="b" id="bs" title="Âm thanh">🔊</button><button class="b" id="bp" title="Tạm dừng (Esc)">⏸ Menu</button></div>
 <button id="kn" class="ov b h"></button>
 <div id="pp" class="ov pn h"></div>
 <div id="menu" class="ov pn">
 <h1>BÀN TAY<br>ẨN MÌNH</h1><p>Quán nước không cửa, không chủ… chỉ có một ô cửa sổ và thứ gì đó trong bóng tối.</p>
 <button class="b" id="mn">▶ Bắt Đầu</button><button class="b" id="mc2">⏵ Chơi Tiếp</button>
-<button class="b" id="ms">⚙ Cài đặt</button><button class="b" id="ma">🔊 Âm thanh: Bật</button>
+<button class="b" id="mshop">🛒 Cửa hàng</button><button class="b" id="mach">🏆 Thành tích</button><button class="b" id="ms">⚙ Cài đặt</button><button class="b" id="ma">🔊 Âm thanh: Bật</button>
 <div id="set" class="h"><label>Âm lượng<input type="range" id="vol" min="0" max="100" value="70"></label>
 <label><input type="checkbox" id="gen"> Chế độ hù nhẹ (bớt rung/nhấp nháy)</label><br>
 <button class="b" id="rs">Xóa tiến trình</button></div>
 <p style="font-size:.85em;opacity:.7">Máy tính: Space, 1-6, Esc · Điện thoại: chạm vào nút hoặc ô cửa sổ</p></div>
-<div id="sum" class="ov pn h"></div></div>
+<div id="sum" class="ov pn h"></div><div id="md" class="ov pn h"></div><div id="toast" class="ov pn h"></div></div>
 <script>
 const C=document.getElementById('c'),X=C.getContext('2d'),W=960,H=540,$=id=>document.getElementById(id);
 const R=(a,b)=>a+Math.random()*(b-a),RI=n=>Math.floor(Math.random()*n),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),lp=(a,b,t)=>a+(b-a)*t,ez=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
@@ -67,10 +70,10 @@ const CT=[
 {n:'Khách kỳ quái',skin:'#a9c79a',cl:'#7a3f9a',hr:'#111',say:['Hi hi hi…','Dễ thương ghê.','Ta thích chỗ này.'],hi:'Cho ta thứ… ngọt ngọt.',ex:'happy'},
 {n:'Khách quen',skin:'#d9a37a',cl:'#8a6a3a',hr:'#bbb',say:['Chào cậu nhé!','Vẫn thế thôi.','Hôm nay vui nhỉ.'],hi:'Như mọi khi nhé.',ex:'happy'},
 {n:'Khách bí ẩn',skin:'#000',cl:'#1c1626',hr:'#000',say:['…','…','…'],hi:'(đưa tờ giấy ghi món)',ex:'calm'}];
-const G={phase:'title',paused:false,day:1,total:0,best:0,n:0,ok:0,sm:0,cust:null,ev:null,sc:null,say:null,shut:0,shutT:0,sp:2,shake:0,tug:0,rel:0,idle:3,lastT:-1,lastEv:'',lastL:'',set:{gentle:false},fl:null,cs:{dx:0},dip:-9,nk:0};
+const G={phase:'title',paused:false,day:1,total:0,best:0,n:0,ok:0,sm:0,cust:null,ev:null,sc:null,say:null,shut:0,shutT:0,sp:2,up:{lamp:0,cup:0,cab:0,charm:0},ach:[],fear:0,fcd:0,streak:0,seen:{},mx:0,hb:0,warn:0,shake:0,tug:0,rel:0,idle:3,lastT:-1,lastEv:'',lastL:'',set:{gentle:false},fl:null,cs:{dx:0},dip:-9,nk:0};
 let P={},AC=null,amb=null,mute=false,vol=.7;
-try{const s=JSON.parse(localStorage.getItem('btam')||'{}');G.sv=s;G.best=s.best||0}catch(e){G.sv={}}
-function save(){try{localStorage.setItem('btam',JSON.stringify({day:G.day,total:G.total,best:G.best}))}catch(e){}}
+try{const s=JSON.parse(localStorage.getItem('btam')||'{}');G.sv=s;G.best=s.best||0;Object.assign(G.up,s.up||{});G.ach=s.ach||[]}catch(e){G.sv={}}
+function save(){try{localStorage.setItem('btam',JSON.stringify({day:G.day,total:G.total,best:G.best,up:G.up,ach:G.ach}))}catch(e){}}
 /* ===== AUDIO ===== */
 function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();o.type='sawtooth';o.frequency.value=48;f.frequency.value=130;o.connect(f);f.connect(g);g.connect(AC.destination);g.gain.value=0;o.start();amb=g}catch(e){AC=null}}if(AC&&AC.state==='suspended')AC.resume();return AC}
 const ou=()=>mute?0:vol;
@@ -93,7 +96,7 @@ if(d>=0){c.save();cp(c);c.clip();c.fillStyle=DR[d][1];c.fillRect(-22,-46,44,46);
 if(ice){c.fillStyle='rgba(255,255,255,.7)';[[-9,-36],[5,-40],[-2,-24],[-8,-12],[7,-16]].forEach(a=>c.fillRect(a[0],a[1],10,10))}
 if(top==1){c.fillStyle='#111';[-9,-3,3,9,-6,6].forEach((a,i)=>{c.beginPath();c.arc(a,-4-(i>3?7:0),3.5,0,7);c.fill()})}
 if(top==2){c.fillStyle='#5fd08a';[-9,-3,3,9].forEach(a=>c.fillRect(a-2.5,-8,5,5))}c.restore()}
-cp(c);c.strokeStyle='#eef';c.lineWidth=2.5;c.stroke();
+cp(c);c.strokeStyle=G.up.cup?'#f5d76e':'#eef';c.lineWidth=2.5;c.stroke();
 c.strokeStyle='#d33';c.lineWidth=4;c.beginPath();c.moveTo(6,-56);c.lineTo(15,-84);c.stroke();
 if(lid){c.fillStyle='#e8e8f4';c.strokeStyle='#445';c.lineWidth=2;c.beginPath();c.ellipse(0,-57,22,6,0,0,7);c.fill();c.stroke()}c.restore()}
 function once(k,f){const e=G.ev;if(e&&!e.fx[k]){e.fx[k]=1;f()}}
@@ -129,8 +132,8 @@ X.fillStyle='#000';X.beginPath();X.arc(-10,0,6,0,7);X.arc(10,0,p>.7?6:1,0,7);X.f
 {id:'eyecup',n:'Mắt mở sau ly',l:'s',u:'d',dur:3.4,at:1.3,h:1,d(p){const x=lp(495,LX,ez(Math.min(1,p/.3))),r=p>.3?cl((p-.3)/.15,0,1):0;once('a',sfx.drag);inWin(()=>{if(p>.5){const o=ez(cl((p-.5)/.2,0,1))*(p>.9?1-(p-.9)/.1:1);eye(508,235,32,22,o)}});held(x,LY);if(r<1)limb(505,250,lp(x+14,505,r),lp(272,250,r),10,12,PALE,5,26,0,.3)}}
 ];
 function pickEv(u){const hard=G.lastL==='h';let a=EV.filter(e=>e.u.includes(u)&&e.id!==G.lastEv),w=a.map(e=>e.l==='h'?(hard?.15:.5+G.day*.15):e.l==='f'?.8:1),s=w.reduce((x,y)=>x+y,0),r=Math.random()*s;for(let i=0;i<a.length;i++){r-=w[i];if(r<=0)return a[i]}return a[0]}
-function startEv(e){G.ev=Object.assign({},e,{t:T,fx:{},sf:0});G.lastEv=e.id;G.lastL=e.l;G.tug=0;G.rel=0;if(e.l==='h')setAmb(0)}
-function scare(e){if(G.phase==='title'||!G.cust)return;const l=e.l==='h'?2:e.l==='s'?1:.6,c=G.cust;G.sc={t:T,l};G.say={t:CT[c.t].say[RI(3)],u:T+1.5};if(c.t===1)sfx.scream();if(l>=2&&!G.set.gentle){G.shake=7;G.dip=T}}
+function startEv(e){G.ev=Object.assign({},e,{t:T,fx:{},sf:0});G.lastEv=e.id;G.lastL=e.l;if(e.id==='face')G.sawFace=1;G.tug=0;G.rel=0;if(e.l==='h')setAmb(0)}
+function scare(e){if(G.phase==='title'||!G.cust)return;const l=e.l==='h'?2:e.l==='s'?1:.6,c=G.cust;G.sc={t:T,l};addFear(l);G.say={t:CT[c.t].say[RI(3)],u:T+1.5};if(c.t===1)sfx.scream();if(l>=2&&!G.set.gentle){G.shake=7;G.dip=T}}
 /* ===== BACKGROUND ===== */
 const B=document.createElement('canvas');B.width=W;B.height=H;
 function hp(c,x,y,s,r,col){c.save();c.translate(x,y);c.rotate(r);c.scale(s,s);c.fillStyle=col;c.beginPath();c.ellipse(0,0,14,17,0,0,7);c.fill();for(let i=0;i<5;i++){const a=-1.9+i*.5;c.beginPath();c.ellipse(Math.cos(a)*17,Math.sin(a)*21-4,4,10,a+Math.PI/2,0,7);c.fill()}c.fillRect(-4,14,8,24+i0());c.restore()}
@@ -215,10 +218,12 @@ function bubble(txt,x,y){X.font='bold 17px "Noto Serif","Times New Roman",serif'
 /* ===== RENDER ===== */
 function render(){X.setTransform(1,0,0,1,0,0);X.clearRect(0,0,W,H);const sh=G.set.gentle?0:G.shake;X.translate((Math.random()-.5)*sh,(Math.random()-.5)*sh);X.drawImage(B,0,0);
 // đèn
-let lamp=.85+.15*Math.sin(T*23)*Math.sin(T*7.3);if(!G.set.gentle){if((T*.37)%1>.94)lamp*=.25;if(T-G.dip<.35)lamp*=.15+Math.random()*.3}
+let lamp=.85+.15*Math.sin(T*23)*Math.sin(T*7.3);if(!G.set.gentle){if((T*.37)%1>.94+.02*G.up.lamp)lamp*=.25;if(T-G.dip<.35)lamp*=.15+Math.random()*.3}
 X.strokeStyle='#111';X.lineWidth=2;X.beginPath();X.moveTo(480,160);X.lineTo(480,168);X.stroke();X.fillStyle='#2a2a2a';X.beginPath();X.moveTo(466,178);X.lineTo(494,178);X.lineTo(488,166);X.lineTo(472,166);X.fill();X.fillStyle='rgba(255,215,110,'+lamp+')';X.beginPath();X.arc(480,180,7,0,7);X.fill();
 // chuông
 const sw=G.bell&&T-G.bell<1.5?Math.sin((T-G.bell)*18)*.4*(1-(T-G.bell)/1.5):0;X.save();X.translate(358,196);X.rotate(sw);X.fillStyle='#b8862a';X.strokeStyle='#2a1a06';X.lineWidth=2;X.beginPath();X.moveTo(-10,18);X.quadraticCurveTo(-10,0,0,0);X.quadraticCurveTo(10,0,10,18);X.closePath();X.fill();X.stroke();X.fillStyle='#6a4a10';X.beginPath();X.arc(0,20,3,0,7);X.fill();X.restore();X.strokeStyle='#222';X.beginPath();X.moveTo(340,196);X.lineTo(358,196);X.stroke();
+if(G.up.charm){X.save();X.translate(670,160);X.rotate(Math.sin(T*1.5)*.08);X.strokeStyle='#222';X.lineWidth=2;X.beginPath();X.moveTo(0,-14);X.lineTo(0,0);X.stroke();X.fillStyle='#b8232a';X.strokeStyle='#e8c860';X.fillRect(-9,0,18,30);X.strokeRect(-9,0,18,30);X.fillStyle='#e8c860';X.fillRect(-4,7,8,2);X.fillRect(-2,12,4,12);X.restore()}
+for(let i=0;i<G.up.cab*2;i++){X.fillStyle=['#3a7','#c63','#47c','#c36','#cb3','#6bc'][i];X.fillRect(592+i*10,230,7,18);X.fillRect(593+i*10,225,5,6)}if(G.up.cab){X.fillStyle='#6a4426';X.fillRect(588,248,6+G.up.cab*20,5)}
 // cửa sổ tối
 inWin(()=>{let g=X.createRadialGradient(480,240,5,480,240,110);g.addColorStop(0,'#150f1e');g.addColorStop(1,'#020104');X.fillStyle=g;X.fillRect(395,185,170,108);X.fillStyle='rgba(120,100,160,.09)';[[415,255,10,38],[445,245,12,48],[520,250,14,44]].forEach(a=>X.fillRect(...a));for(let i=0;i<6;i++){X.fillStyle='rgba(255,230,160,.12)';X.fillRect(400+(i*37+T*6)%160,190+(i*23+T*3)%95,1.5,1.5)}});
 drawCust();
@@ -232,19 +237,20 @@ if(G.phase==='menu'){const u=(T-G.pt)/1.8,k=u<.2?u/.2:u>.8?(1-u)/.2:1,tx=lp(500,
 if(G.ev){const e=G.ev,p=e.dur>100?0:cl((T-e.t)/e.dur,0,1);e.d(p);if(e.h)inWin(()=>{let g=X.createRadialGradient(490,250,2,490,250,30);g.addColorStop(0,'rgba(2,1,4,.95)');g.addColorStop(1,'rgba(2,1,4,0)');X.fillStyle=g;X.fillRect(395,185,170,108)})}
 shutter(G.shut);
 // lớp ánh sáng đèn
-if(lamp>.3){let g=X.createRadialGradient(480,190,5,480,330,260);g.addColorStop(0,'rgba(255,200,90,'+.32*lamp+')');g.addColorStop(1,'rgba(255,200,90,0)');X.globalCompositeOperation='lighter';X.fillStyle=g;X.fillRect(260,150,440,360);X.globalCompositeOperation='source-over'}
+if(lamp>.3){let g=X.createRadialGradient(480,190,5,480,330,260);g.addColorStop(0,'rgba(255,200,90,'+.32*lamp*(1+.2*G.up.lamp)+')');g.addColorStop(1,'rgba(255,200,90,0)');X.globalCompositeOperation='lighter';X.fillStyle=g;X.fillRect(260,150,440,360);X.globalCompositeOperation='source-over'}
 // sương
 for(let i=0;i<5;i++){const x=((T*14+i*210)%1200)-120;X.fillStyle='rgba(150,130,190,.07)';X.beginPath();X.ellipse(x,480+i*10,130,22,0,0,7);X.fill()}
+if(G.fear>50){let g=X.createRadialGradient(480,270,200,480,270,560);g.addColorStop(0,'rgba(120,0,20,0)');g.addColorStop(1,'rgba(150,0,30,'+((G.fear-50)/100*.8)+')');X.fillStyle=g;X.fillRect(0,0,W,H)}
 if(G.say&&T<G.say.u&&c)bubble(G.say.t,c.x+G.cs.dx,172);
 if(G.fl&&T-G.fl.t<1.4){const u=T-G.fl.t;X.globalAlpha=1-u/1.4;X.font='bold 28px "Noto Serif","Times New Roman",serif';X.fillStyle=G.fl.c;X.strokeStyle='#000';X.lineWidth=4;X.textAlign='center';X.strokeText(G.fl.s,G.fl.x,G.fl.y-u*40);X.fillText(G.fl.s,G.fl.x,G.fl.y-u*40);X.textAlign='left';X.globalAlpha=1}
 if(G.phase==='prep'||G.phase==='dev')drawMini()}
 /* ===== GAME FLOW ===== */
 const setShut=(t,sp)=>{G.shutT=t;G.sp=sp};
 const show=(id,v)=>$(id).classList.toggle('h',!v);
-function hud(){$('hud').innerHTML=`Ngày ${G.day} · Khách <b>${G.n}</b>/6 · Ca: <b>${G.sm}k</b> · Tổng: ${G.total}k <span class="rc"> · Kỷ lục: ${G.best}k</span>`}
+function hud(){$('ht').innerHTML=`Ngày ${G.day} · Khách <b>${G.n}</b>/6 · Ca: <b>${G.sm}k</b> · Tổng: ${G.total}k <span class="rc"> · Kỷ lục: ${G.best}k</span>`}
 function ordTxt(o){return `${DR[o.d][0]} · ${o.i?'có đá':'không đá'} · ${TP[o.t]}`}
-function nextCust(){const un=Math.min(8,1+2*G.day);let t;do{t=RI(un)}while(t===G.lastT&&un>1);G.lastT=t;G.cust={t,x:-120};G.o={d:RI(6),i:Math.random()<.7?1:0,t:RI(3)};G.phase='arrive';G.pt=T;setShut(1,3);G.sc=null;G.say=null;G.exO=null;G.ev=null;show('tk',0);show('kn',0);show('pp',0);hud()}
-function startShift(day){G.day=day;G.n=0;G.sm=0;G.ok=0;G.paused=false;show('menu',0);show('sum',0);show('hud',1);show('top',1);G.shake=0;ac();setAmb(.03);hud();G.started=true;nextCust()}
+function nextCust(){const un=Math.min(8,1+2*G.day);let t;do{t=RI(un)}while(t===G.lastT&&un>1);G.lastT=t;G.cust={t,x:-120};G.o={d:RI(6),i:Math.random()<.7?1:0,t:RI(3)};G.phase='arrive';G.pt=T;setShut(1,3);G.sc=null;G.sawFace=0;G.say=null;G.exO=null;G.ev=null;show('tk',0);show('kn',0);show('pp',0);hud()}
+function startShift(day){G.day=day;G.n=0;G.sm=0;G.ok=0;G.paused=false;show('menu',0);show('sum',0);show('hud',1);show('top',1);G.shake=0;G.fear=0;G.mx=0;G.streak=0;ac();setAmb(.03);hud();G.started=true;nextCust()}
 function btn(txt){const k=$('kn');k.textContent=txt;show('kn',!!txt)}
 function act(){ac();const ph=G.phase;if(G.paused)return;
 if(ph==='ready'){sfx.knock();G.bell=T;G.phase='knock';G.pt=T;G.kd=R(1.6,3.2)-Math.min(1,G.day*.1);G.nk=T+.9;btn('');setAmb(0)}
@@ -252,14 +258,14 @@ else if(ph==='dev'&&G.ev&&G.ev.tug){G.tug++;sfx.cup();G.shake=2;if(G.tug>=6&&!G.
 else if(ph==='take'){G.phase='give';G.pt=T;btn('');sfx.cup()}
 else if(ph==='prep'&&P.step>=3)pdo(P.step===3?'lid':'go')}
 function resolve(){const c=G.cust,o=G.o,m=G.made,pt=T-G.pt0;let pay=0,msg='',perf=m.d===o.d&&m.i===o.i&&m.t===o.t;
-if(m.d!==o.d){msg='Sai món!'}else{pay=DR[o.d][2];if(m.i!==o.i)pay-=3;if(m.t!==o.t)pay-=3;pay=Math.max(2,pay);if(pt<12)pay+=3;if(c.t===6)pay+=2;if(c.t===4&&pt>14){pay=Math.max(1,pay-4);msg='Chậm quá!'}}
-if(perf)G.ok++;G.sm+=pay;G.total+=pay;G.n++;if(G.sm>G.best)G.best=G.sm;
+if(m.d!==o.d){msg='Sai món!'}else{pay=DR[o.d][2];if(m.i!==o.i)pay-=3;if(m.t!==o.t)pay-=3;pay=Math.max(2,pay);if(pt<12+4*G.up.cab)pay+=3;if(c.t===6)pay+=2;if(c.t===4&&pt>14){pay=Math.max(1,pay-4);msg='Chậm quá!'}}
+if(G.fear>=100){pay=0;perf=false;msg='Run quá, đổ mất ly!';G.fear=60}if(pay>0)pay+=2*G.up.cup;G.streak=perf?G.streak+1:0;G.seen[c.t]=1;if(perf)G.ok++;G.sm+=pay;G.total+=pay;G.n++;if(G.sm>G.best)G.best=G.sm;
 G.exO={ex:pay>0?'happy':'angry',u:T+1.4};G.say={t:msg||(pay>=DR[o.d][2]?'Ngon lắm, cảm ơn!':'Cũng được…'),u:T+1.3};if(c.t===7)G.say.t='…';
-G.fl={s:pay>0?'+'+pay+'k':'0k',c:pay>0?'#ffd34a':'#ff6a5a',x:c.x+60,y:300,t:T};if(pay>0)sfx.coin();hud();G.phase='thanks';G.pt=T}
-function endShift(){G.phase='sum';save();const st=G.ok>=5?'★★★':G.ok>=3?'★★☆':'★☆☆',un=Math.min(8,1+2*(G.day+1)),nw=un>Math.min(8,1+2*G.day)?`<p>🔓 Khách mới sẽ xuất hiện: <b>${CT.slice(Math.min(8,1+2*G.day),un).map(c=>c.n).join(', ')}</b></p>`:'';
-$('sum').innerHTML=`<h2 style="margin:.2em 0;color:var(--gd)">Hết ca · Ngày ${G.day}</h2><p>Khách đã phục vụ: <b>6</b> · Đúng hoàn hảo: <b>${G.ok}</b> ${st}<br>Tiền ca này: <b>${G.sm}k</b> · Tổng: <b>${G.total}k</b> · Kỷ lục: ${G.best}k</p>${nw}<p style="opacity:.8">Ngày sau, quán sẽ… quái hơn.</p><button class="b" id="s1">Ca tiếp theo ▶</button> <button class="b" id="s2">↺ Chơi lại ca này</button> <button class="b" id="s3">Về menu</button>`;
-show('sum',1);show('tk',0);show('pp',0);btn('');$('s1').onclick=()=>{G.day++;save();startShift(G.day)};$('s2').onclick=()=>startShift(G.day);$('s3').onclick=()=>{G.phase='title';G.cust=null;setShut(0,1.8);G.started=false;show('sum',0);show('hud',0);show('top',0);menuOpen()}}
-function update(dt){G.shake*=Math.pow(.02,dt);const sT=G.shutT;G.shut=G.shut<sT?Math.min(sT,G.shut+dt*G.sp):Math.max(sT,G.shut-dt*G.sp);
+G.fl={s:pay>0?'+'+pay+'k':'0k',c:pay>0?'#ffd34a':'#ff6a5a',x:c.x+60,y:300,t:T};if(pay>0)sfx.coin();hud();chk(pay);G.phase='thanks';G.pt=T}
+function endShift(){G.phase='sum';ach('shift');if(G.mx<=70)ach('calm');save();const st=G.ok>=5?'★★★':G.ok>=3?'★★☆':'★☆☆',un=Math.min(8,1+2*(G.day+1)),nw=un>Math.min(8,1+2*G.day)?`<p>🔓 Khách mới sẽ xuất hiện: <b>${CT.slice(Math.min(8,1+2*G.day),un).map(c=>c.n).join(', ')}</b></p>`:'';
+$('sum').innerHTML=`<h2 style="margin:.2em 0;color:var(--gd)">Hết ca · Ngày ${G.day}</h2><p>Khách đã phục vụ: <b>6</b> · Đúng hoàn hảo: <b>${G.ok}</b> ${st}<br>Tiền ca này: <b>${G.sm}k</b> · Tổng: <b>${G.total}k</b> · Kỷ lục: ${G.best}k</p>${nw}<p style="opacity:.8">Ngày sau, quán sẽ… quái hơn.</p><button class="b" id="s1">Ca tiếp theo ▶</button> <button class="b" id="s2">↺ Chơi lại ca này</button> <button class="b" id="s4">🛒 Cửa hàng</button> <button class="b" id="s3">Về menu</button>`;
+show('sum',1);show('tk',0);show('pp',0);btn('');$('s4').onclick=openShop;$('s1').onclick=()=>{G.day++;save();startShift(G.day)};$('s2').onclick=()=>startShift(G.day);$('s3').onclick=()=>{G.phase='title';G.cust=null;setShut(0,1.8);G.started=false;show('sum',0);show('hud',0);show('top',0);menuOpen()}}
+function update(dt){G.shake*=Math.pow(.02,dt);if(G.cust&&G.phase!=='title'&&G.phase!=='sum'){G.fear=Math.max(0,G.fear-dt*(G.shut>.95?7:2)*(1+.4*G.up.charm));G.fcd=Math.max(0,G.fcd-dt);if(G.fear<70)G.warn=0;if(G.fear>70&&T>G.hb){tone(60,.16,'sine',.45,-20);G.hb=T+.95-(G.fear-70)*.01}}$('fr').firstElementChild.style.width=G.fear+'%';const sT=G.shutT;G.shut=G.shut<sT?Math.min(sT,G.shut+dt*G.sp):Math.max(sT,G.shut-dt*G.sp);
 const ph=G.phase,c=G.cust,e=G.ev;
 if(e&&!e.sf&&T-e.t>=e.at){e.sf=1;scare(e)}
 if(ph==='title'){if(!e&&T>G.idle){startEv(EV.filter(x=>x.u.includes('i'))[RI(4)]);G.ev.fx={}}else if(e&&T-e.t>=e.dur){G.ev=null;G.idle=T+R(4,8)}return}
@@ -279,15 +285,26 @@ else if(s===1)h='<h3>2 · Thêm đá?</h3><button class=b data-a="i1">1. Có đ�
 else if(s===2)h='<h3>3 · Topping</h3>'+TP.map((t,i)=>`<button class=b data-a="t${i}">${i+1}. ${t}</button>`).join('');
 else if(s===3)h='<h3>4 · Đậy nắp</h3><button class=b data-a="lid">Đậy nắp (Space)</button>';
 else h='<h3>5 · Hoàn thành</h3><button class=b data-a="go">GIAO NƯỚC (Space)</button>';
-p.innerHTML=h+'<canvas id="mc" width="120" height="150"></canvas><button class=b data-a="rs">↺ Làm lại ly</button>'}
-function pdo(a){const k=a[0],v=+a.slice(1);if(G.phase!=='prep')return;sfx.cup();
-if(a==='rs'){P={d:-1,i:null,t:null,lid:false,step:0}}
+p.innerHTML=h+'<canvas id="mc" width="120" height="150"></canvas><button class=b data-a="rs">↺ Làm lại ly</button><button class=b data-a="br">🫁 Hít thở (−Sợ hãi)</button>'}
+function pdo(a){if(G.phase!=='prep')return;sfx.cup();if(G.fear>=85&&Math.random()<.35&&'dit'.includes(a[0])&&a.length>1){const m=a[0]==='d'?'d'+RI(6):a[0]==='i'?'i'+(1-(+a[1])):'t'+RI(3);if(m!==a){a=m;toast('✋ Tay run! Bấm nhầm')}}const k=a[0],v=+a.slice(1);
+if(a==='br'){if(G.fcd>0){toast('Chưa hít thở được, đợi chút…');return}G.fear=Math.max(0,G.fear-25-8*G.up.charm);G.fcd=5;tone(220,.8,'sine',.12,-60);toast('🫁 Hít thở… bình tĩnh lại')}else if(a==='rs'){P={d:-1,i:null,t:null,lid:false,step:0}}
 else if(k==='d'&&P.step===0){P.d=v;P.step=1}else if(k==='i'&&P.step===1){P.i=v;P.step=2}else if(k==='t'&&P.step===2){P.t=v;P.step=3}
 else if(a==='lid'&&P.step===3){P.lid=true;P.step=4}
 else if(a==='go'&&P.step===4){G.made={d:P.d,i:P.i,t:P.t};show('pp',0);G.phase='dev';const e=pickEv('d');setShut(0,1.8);sfx.drag();startEv(e);G.ev.t+=.5;if(e.tug)btn('GIẬT LY! 0/6');return}
 panel()}
 $('pp').onclick=e=>{const b=e.target.closest('button');if(b)pdo(b.dataset.a)};
 function drawMini(){const m=$('mc');if(!m)return;const c=m.getContext('2d');c.clearRect(0,0,120,150);c.fillStyle='#8a5c34';c.fillRect(0,132,120,18);cup(c,60,132,1.7,P.d??-1,P.i,P.t,P.lid)}
+/* ===== CỬA HÀNG / THÀNH TÍCH / SỢ HÃI ===== */
+const UP=[['lamp','🏮 Đèn dầu ấm','Giảm 20% Sợ hãi mỗi cấp, đèn ít chập chờn',[40,90,160]],['cup','🥤 Ly pha lê','+2k tiền boa mỗi đơn, mỗi cấp',[30,70,130]],['cab','🗄️ Tủ pha chế','Thêm 4 giây cho thưởng pha nhanh, mỗi cấp',[35,80,140]],['charm','🧿 Bùa bình an','Sợ hãi hồi nhanh hơn, hít thở mạnh hơn',[50,110,180]]];
+const AL=[['first','🥤 Ly đầu tiên','Giao thành công một ly nước'],['perf3','🎯 Tay nghề','3 đơn hoàn hảo liên tiếp'],['face','😶 Gan dạ','Phục vụ khách ngay sau khi Khuôn mặt hiện ra'],['rich','💰 Chủ quán','Có 200k trong tay'],['shift','🌙 Sống sót','Hoàn thành một ca'],['calm','🧘 Bình tĩnh','Hết ca mà Sợ hãi không vượt 70%'],['shop','🛒 Biết đầu tư','Mua nâng cấp đầu tiên'],['seen','👥 Quen mặt','Gặp cả 8 kiểu khách trong một lần chơi']];
+function toast(s){$('toast').textContent=s;show('toast',1);clearTimeout(toast.t);toast.t=setTimeout(()=>show('toast',0),2600)}
+function ach(id){if(G.ach.includes(id))return;G.ach.push(id);const a=AL.find(x=>x[0]===id);toast('🏆 '+a[1]+' – '+a[2]);save()}
+function chk(pay){if(pay>0)ach('first');if(G.streak>=3)ach('perf3');if(pay>0&&G.sawFace)ach('face');if(G.total>=200)ach('rich');if(Object.keys(G.seen).length>=8)ach('seen')}
+function addFear(l){G.fear=Math.min(100,G.fear+(l>=2?24:l>=1?12:6)*(1-.2*G.up.lamp));G.mx=Math.max(G.mx,G.fear);if(G.fear>=85&&!G.warn){G.warn=1;toast('😨 Sợ hãi sắp tràn! Hít thở khi cửa đóng')}}
+function md(h){$('md').innerHTML=h;show('md',1)}
+function openShop(){let h=`<h2 style='margin:.2em 0;color:var(--gd)'>🛒 Cửa hàng</h2><p>Tiền: <b>${G.total}k</b></p>`;UP.forEach(u=>{const lv=G.up[u[0]],mx=lv>=3,cost=u[3][lv];h+=`<div style='margin:.5em 0;text-align:left'><b>${u[1]}</b> (cấp ${lv}/3)<br><small>${u[2]}</small><br><button class=b data-a='u${u[0]}' ${mx||G.total<cost?'disabled':''}>${mx?'Đã tối đa':'Mua '+cost+'k'}</button></div>`});md(h+'<button class=b data-a=x>Đóng</button>')}
+function openAch(){let h=`<h2 style='margin:.2em 0;color:var(--gd)'>🏆 Thành tích (${G.ach.length}/${AL.length})</h2>`;AL.forEach(a=>{const ok=G.ach.includes(a[0]);h+=`<div style='margin:.4em 0;text-align:left;opacity:${ok?1:.5}'>${ok?'✅':'🔒'} <b>${a[1]}</b><br><small>${a[2]}</small></div>`});md(h+'<button class=b data-a=x>Đóng</button>')}
+function mdo(a){if(a==='x'){show('md',0);return}if(a[0]==='u'){const u=UP.find(x=>x[0]===a.slice(1));if(!u)return;const lv=G.up[u[0]],cost=u[3][lv];if(lv>=3||G.total<cost)return;G.total-=cost;G.up[u[0]]++;sfx.coin();ach('shop');save();hud();openShop()}}
 /* ===== MENU / INPUT ===== */
 function menuOpen(){const has=G.started||(G.sv&&(G.sv.total>0||G.sv.day>1));$('mc2').disabled=!has;show('menu',1)}
 function pause(){if(!G.started||G.paused||G.phase==='sum'||G.phase==='title')return;G.paused=true;menuOpen()}
@@ -297,10 +314,13 @@ $('ms').onclick=()=>show('set',$('set').classList.contains('h'));
 function snd(){mute=!mute;$('bs').textContent=mute?'🔇':'🔊';$('ma').textContent='🔊 Âm thanh: '+(mute?'Tắt':'Bật');if(AC&&amb)amb.gain.value=mute?0:amb.gain.value}
 $('ma').onclick=snd;$('bs').onclick=snd;$('bp').onclick=pause;
 $('vol').oninput=e=>{vol=e.target.value/100};$('gen').onchange=e=>{G.set.gentle=e.target.checked};
-$('rs').onclick=()=>{G.sv={};G.best=0;try{localStorage.removeItem('btam')}catch(e){}if(!G.started)$('mc2').disabled=true};
+$('rs').onclick=()=>{G.sv={};G.best=0;G.up={lamp:0,cup:0,cab:0,charm:0};G.ach=[];G.total=0;try{localStorage.removeItem('btam')}catch(e){}if(!G.started)$('mc2').disabled=true};
 $('kn').onclick=act;
+$('mshop').onclick=openShop;$('mach').onclick=openAch;$('md').onclick=e=>{const b=e.target.closest('button');if(b)mdo(b.dataset.a)};
+const fsE=$('w');if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled))$('bf').classList.add('h');
+$('bf').onclick=()=>{try{if(document.fullscreenElement||document.webkitFullscreenElement){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}else{(fsE.requestFullscreen||fsE.webkitRequestFullscreen).call(fsE);try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}}}catch(e){}};
 C.addEventListener('pointerdown',e=>{const r=C.getBoundingClientRect(),x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;const ph=G.phase;if(ph==='ready'&&x>380&&x<590&&y>170&&y<320)act();else if(ph==='take'&&Math.hypot(x-LX,y-LY+25)<55)act();else if(ph==='dev'&&G.ev&&G.ev.tug&&x>380&&x<590&&y>170&&y<330)act()});
-addEventListener('keydown',e=>{if(e.key==='Escape'){if(G.paused){G.paused=false;show('menu',0)}else pause();return}if(G.paused||G.phase==='title')return;if(e.code==='Space'){e.preventDefault();act()}
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('md').classList.contains('h')){show('md',0);return}if(G.paused){G.paused=false;show('menu',0)}else pause();return}if(G.paused||G.phase==='title')return;if(e.code==='Space'){e.preventDefault();act()}
 else if(G.phase==='prep'&&/^[1-6]$/.test(e.key)){const n=+e.key-1;if(P.step===0)pdo('d'+n);else if(P.step===1&&n<2)pdo(n===0?'i1':'i0');else if(P.step===2&&n<3)pdo('t'+n)}});
 function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(!G.paused){T+=dt;update(dt)}render();requestAnimationFrame(loop)}
 bg();menuOpen();requestAnimationFrame(loop);
